@@ -1,4 +1,4 @@
-Write-Host "Hack Club Regis Application Installer version 1.0.0" -ForegroundColor Green
+Write-Host "Hack Club Regis Application Installer version 1.0.1" -ForegroundColor Green
 Write-Host "This will install apps like VS Code, GitHub, Anaconda, Node.js, and Hackatime on your PC."
 Write-Host "The installation will begin in 10 seconds. Press Ctrl + C NOW to abort."
 Start-Sleep -Seconds 10
@@ -19,6 +19,22 @@ if ((Test-CommandExists -Command "code") -or (Test-CommandExists -Command "code-
 } else {
     Write-Host "VS Code not found. Installing VS Code from winget..." -ForegroundColor Red
     winget install --id Microsoft.VisualStudioCode --silent --accept-source-agreements --accept-package-agreements
+}
+
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" +
+            [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+$TimeoutSeconds = 60
+$ElapsedSeconds = 0
+
+while (-not ((Test-CommandExists -Command code)-or (Test-CommandExists -Command code-insiders))) {
+    if ($ElapsedSeconds -ge $TimeoutSeconds) {
+        Write-Host "Timed out waiting for VS Code to finish starting up." -ForegroundColor Red
+        exit 1
+    }
+
+    Start-Sleep -Seconds 1
+    $ElapsedSeconds++
 }
 
 Write-Host "Checking for VS Code extensions..."
