@@ -1,4 +1,4 @@
-Write-Host "Hack Club Regis Application Installer version 1.0.1" -ForegroundColor Green
+Write-Host "Hack Club Regis Application Installer version 1.0.2" -ForegroundColor Green
 Write-Host "This will install apps like VS Code, GitHub, Anaconda, Node.js, and Hackatime on your PC."
 Write-Host "The installation will begin in 10 seconds. Press Ctrl + C NOW to abort."
 Start-Sleep -Seconds 10
@@ -37,7 +37,7 @@ while (-not ((Test-CommandExists -Command code)-or (Test-CommandExists -Command 
     $ElapsedSeconds++
 }
 
-Write-Host "Checking for VS Code extensions..."
+Write-Host "Installing VS Code extensions..."
 if (Test-CommandExists -Command "code"){
 $InstalledExtensions = @(
     code --list-extensions
@@ -163,11 +163,12 @@ else {
 }
 
 git clone "https://github.com/Hack-Club-Regis/HOOT-Web-Frontend.git" "$HOME\HOOT\HOOT-Web-Frontend"
+git clone "https://github.com/Hack-Club-Regis/HOOT-AI-Backend.git" "$HOME\HOOT\HOOT-AI-Backend"
 
 # GitHub Desktop
 
 Write-Host "Checking for GitHub Desktop installation..."
-if (Test-CommandExists -Command "GitHubDesktop") {
+if (Test-CommandExists -Command "github") {
     Write-Host "GitHub Desktop is already installed."
 } else {
     Write-Host "GitHub Desktop not found. Installing GitHub Desktop from winget..." -ForegroundColor Red
@@ -191,9 +192,21 @@ winget install --id Anaconda.Anaconda3 -e `
     --accept-source-agreements
 }
 # Reload the machine and user PATH variables
+
+
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" +
             [System.Environment]::GetEnvironmentVariable("Path", "User")
 
+while (-not ((Test-CommandExists -Command conda))) {
+    if ($ElapsedSeconds -ge $TimeoutSeconds) {
+        Write-Host "Timed out waiting for conda to finish starting up." -ForegroundColor Red
+        exit 1
+    }
+
+    Start-Sleep -Seconds 1
+    $ElapsedSeconds++
+}
+    
 conda create -n HOOT python=3.14 -y
 conda activate HOOT
 $PythonPackages = @(
@@ -257,11 +270,42 @@ if (Test-Path (Join-Path $HOME .wakatime)) {
 } else {
     Write-Host "Hackatime not found." -ForegroundColor Red
     Write-Host "Hackatime is Hack Club's time tracking tool. You'll need this for YSWS. Sign in in your browser, then paste the command it gives you below."
-Start-Sleep -Seconds 10
-Start-Process "https://hackatime.hackclub.com/setup?step=terminal-command"
+    Start-Sleep -Seconds 10
+    Start-Process "https://hackatime.hackclub.com/setup?step=terminal-command"
 
-$HackatimeCommand = Read-Host "Paste the command here"
+    $HackatimeCommand = Read-Host "Paste the command here"
 
-Invoke-Expression $HackatimeCommand
+    Invoke-Expression $HackatimeCommand
 }
 
+Write-Host "Installation complete!" -ForegroundColor Green
+Write-Host "                                                                                                
+                                                                                                
+                                                                                                
+                                                                                                
+                                 %%%%%%%%%%%%%%#                                                
+                               %@%%%%%%%%%%%%%%%%%%%%                                    +%%%   
+@@@                            @@%%%%.-%%%%%%%%%%%%%%%%%%%                           #%%%%@%    
+.-@@@@                        %@%%%%...%%*..%%%#:%%%%%%%%%%%%%%%               +#%%%%%%%%@%     
+....:%@@@                    %@%%%%%.......*%%:...%%%-.-%%%%%%%%%%%@%%%%%%%%%%%%%%#++%%%%@%%%%%%
+........=@@@@               %@%%%%%...#=...%%-.%-:%#..%+%#.%%%%%%%%%%%%%%%%%%%%-%--%.%%%%%%%%%% 
+............+@%@@@@         @@%%%%%-+%%%..%%.....*%..%%%%-.%*.%%%%%-.+%=+%%%.%%.=%.=%.%%%%@%%   
+.................-#@@%%@@  @@%%%%%%%%%%%+%%%.%%..%%.=%%%%....%%%%%::%%%=.%%%--%-.%--#+%%%%#     
+.................*@-....#@%@%%%%%%%%%%%%%%%%%%%%%%%..=%%..#..%%%%%.=%%%%.%%%%-=.*%%%%%%#        
+................@*.......=@@          %%%%%%%%%%%%%%%%%%-%%=.#%%%%+.+#%%...-#%%%%%%%%+          
+...............%*.......=#%%@                %%%%%%%%%%%%%%%%%%%%%%#+*%%%%%%%%%%%%+             
+..............=%......@%:...@@                     @%%%%%%%%%%%%%%%%%%%%%%%%%%+                 
+..............@.........@@..@@                             +@@@@%%%%%%%%*++                     
+.............+*......:=#*@@@@                                                                   
+.............@......@*+...@@                                                                    
+.............@.......=@@..@@                                                                    
+............=#......=@%@@@@                                                                     
+............=*....:@*-...@                                                                      
+@@=..........@.....:@@#..@                                                                      
+  @@@%%=.....*%...=@@@@#@@                                                                      
+       @@@@@%%@@%@@                                                                             
+                                                                                                
+                                                                                                
+                                                                                                
+                                                                                                
+"
