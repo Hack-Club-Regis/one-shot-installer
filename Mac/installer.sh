@@ -70,7 +70,6 @@ if CODE-READY == 1; then
     extensions = (
         "ms-python.python"
         "ms-python.vscode-pylance"
-        "GitHub.copilot"
         "GitHub.copilot-chat"
         "GitHub.vscode-pull-request-github"
         "ms-vscode.live-server"

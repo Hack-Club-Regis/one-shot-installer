@@ -90,7 +90,6 @@ Write-Host "Extension setup complete!" -ForegroundColor Green
 $Extensions = @(
     "ms-python.python"
     "ms-python.vscode-pylance"
-    "GitHub.copilot"
     "GitHub.copilot-chat"
     "GitHub.vscode-pull-request-github"
     "ms-vscode.live-server"
