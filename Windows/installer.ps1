@@ -10,16 +10,44 @@ function Test-CommandExists {
 
     return $null -ne (Get-Command $Command -ErrorAction SilentlyContinue)
 }
+function Install-WingetPackage {
+    param (
+        [Parameter(Mandatory)]
+        [string]$PackageId
+    )
 
+    Write-Host "Checking $PackageId..." -ForegroundColor Cyan
+
+    $Installed = winget list --id $PackageId -e `
+        --accept-source-agreements 2>$null
+
+    if ($LASTEXITCODE -eq 0 -and $Installed -match $PackageId) {
+        Write-Host "$PackageId is already installed. Skipping." -ForegroundColor Yellow
+        return $true
+    }
+
+    Write-Host "Installing $PackageId..." -ForegroundColor Cyan
+
+    winget install --id $PackageId -e `
+        --silent `
+        --accept-package-agreements `
+        --accept-source-agreements `
+        --disable-interactivity
+
+    $ExitCode = $LASTEXITCODE
+
+    if ($ExitCode -eq 0) {
+        Write-Host "$PackageId installed successfully." -ForegroundColor Green
+        return $true
+    }
+
+    Write-Host "$PackageId installation failed (exit code: $ExitCode)." -ForegroundColor Red
+    return $false
+}
 # VS Code
 
 Write-Host "Checking for VS Code installation..."
-if ((Test-CommandExists -Command "code") -or (Test-CommandExists -Command "code-insiders")){
-    Write-Host "VS Code is already installed."
-} else {
-    Write-Host "VS Code not found. Installing VS Code from winget..." -ForegroundColor Red
-    winget install --id Microsoft.VisualStudioCode --silent --accept-source-agreements --accept-package-agreements
-}
+Install-WingetPackage "Microsoft.VisualStudioCode"
 
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" +
             [System.Environment]::GetEnvironmentVariable("Path", "User")
@@ -128,25 +156,10 @@ Write-Host "Extension setup complete!" -ForegroundColor Green
 }
 # Git
 
-Write-Host "Checking for Git installation..."
-if (Test-CommandExists -Command "git") {
-    Write-Host "Git is already installed."
-} else {
-    Write-Host "Git not found. Installing Git from winget..." -ForegroundColor Red
-    winget install --id Git.Git --silent --accept-package-agreements --accept-source-agreements
-}
+Install-WingetPackage "Git.Git"
 
 # GitHub CLI
-if (Test-CommandExists -Command "gh") {
-    Write-Host "GitHub CLI is already installed."
-} else {
-    Write-Host "GitHub CLI not found. Installing GitHub CLI from winget..." -ForegroundColor Red
-winget install --id GitHub.cli -e `
-    --silent `
-    --accept-package-agreements `
-    --accept-source-agreements `
-    --disable-interactivity
-}
+Install-WingetPackage "GitHub.cli"
 # Reload the machine and user PATH variables
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" +
             [System.Environment]::GetEnvironmentVariable("Path", "User")
@@ -165,33 +178,10 @@ git clone "https://github.com/Hack-Club-Regis/HOOT-Web-Frontend.git" "$HOME\HOOT
 git clone "https://github.com/Hack-Club-Regis/HOOT-AI-Backend.git" "$HOME\HOOT\HOOT-AI-Backend"
 
 # GitHub Desktop
-
-Write-Host "Checking for GitHub Desktop installation..."
-if (Test-CommandExists -Command "github") {
-    Write-Host "GitHub Desktop is already installed."
-} else {
-    Write-Host "GitHub Desktop not found. Installing GitHub Desktop from winget..." -ForegroundColor Red
-    winget install --id GitHub.GitHubDesktop -e `
-    --silent `
-    --accept-package-agreements `
-    --accept-source-agreements `
-    --disable-interactivity
-}
+Install-WingetPackage "GitHub.GitHubDesktop"
 
 # Anaconda
-
-Write-Host "Checking for Anaconda installation..."
-if (Test-CommandExists -Command "conda") {
-    Write-Host "Anaconda is already installed."
-} else {
-    Write-Host "Anaconda not found. Installing Anaconda from winget..." -ForegroundColor Red
-winget install --id Anaconda.Anaconda3 -e `
-    --silent `
-    --accept-package-agreements `
-    --accept-source-agreements
-}
-# Reload the machine and user PATH variables
-
+Install-WingetPackage "Anaconda.Anaconda3"
 
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" +
             [System.Environment]::GetEnvironmentVariable("Path", "User")
@@ -228,18 +218,7 @@ foreach ($PythonPackage in $PythonPackages) {
 }
 
 # Node.js
-
-if ((Get-Command "node" -ErrorAction SilentlyContinue) -and (Get-Command "npm" -ErrorAction SilentlyContinue)) {
-    Write-Host "Node.js is installed!" -ForegroundColor Green
-} else {
-    Write-Host "Node.js is not installed. Installing Node.js from winget..." -ForegroundColor Red
-    winget install --id OpenJS.NodeJS.LTS -e `
-    --silent `
-    --accept-package-agreements `
-    --accept-source-agreements `
-    --disable-interactivity
-}
-# Reload the machine and user PATH variables
+Install-WingetPackage "OpenJS.NodeJS.LTS"
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" +
             [System.Environment]::GetEnvironmentVariable("Path", "User")
 
