@@ -7,7 +7,7 @@ MAGENTA='\e[35m'
 CYAN='\e[36m'
 ENDCOLOR='\e[0m' 
 
-echo "${GREEN}Hack Club Regis Application Installer version 1.0.2${ENDCOLOR}"
+echo "${GREEN}Hack Club Regis Application Installer version 1.0.3${ENDCOLOR}"
 echo "This will install apps like Homebrew, VS Code, GitHub, Anaconda, Node.js, and Hackatime on your PC."
 echo "The installation will begin in 10 seconds. Press Ctrl + C NOW to abort."
 sleep 10

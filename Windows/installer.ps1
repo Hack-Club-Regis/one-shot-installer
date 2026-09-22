@@ -1,4 +1,4 @@
-Write-Host "Hack Club Regis Application Installer version 1.0.2" -ForegroundColor Green
+Write-Host "Hack Club Regis Application Installer version 1.0.3" -ForegroundColor Green
 Write-Host "This will install apps like VS Code, GitHub, Anaconda, Node.js, and Hackatime on your PC."
 Write-Host "The installation will begin in 10 seconds. Press Ctrl + C NOW to abort."
 Start-Sleep -Seconds 10
