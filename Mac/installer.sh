@@ -7,6 +7,46 @@ MAGENTA='\e[35m'
 CYAN='\e[36m'
 ENDCOLOR='\e[0m' 
 
+install_brew_package() {
+    local package="$1"
+
+    if brew list --formula "$package" >/dev/null 2>&1; then
+        echo "$package is already installed — skipping."
+        return 0
+    fi
+
+    echo "Installing $package..."
+    brew install "$package"
+
+    if [[ $? -eq 0 ]]; then
+        echo "$package installed successfully."
+    else
+        echo "WARNING: Failed to install $package — continuing."
+    fi
+
+    return 0
+}
+
+install_brew_cask() {
+    local package="$1"
+
+    if brew list --cask "$package" >/dev/null 2>&1; then
+        echo "$package is already installed — skipping."
+        return 0
+    fi
+
+    echo "Installing $package..."
+    brew install --cask "$package"
+
+    if [[ $? -eq 0 ]]; then
+        echo "$package installed successfully."
+    else
+        echo "WARNING: Failed to install $package — continuing."
+    fi
+
+    return 0
+}
+
 echo "${GREEN}Hack Club Regis Application Installer version 1.0.3${ENDCOLOR}"
 echo "This will install apps like Homebrew, VS Code, GitHub, Anaconda, Node.js, and Hackatime on your PC."
 echo "The installation will begin in 10 seconds. Press Ctrl + C NOW to abort."
@@ -42,16 +82,17 @@ echo "Homebrew is ready: $(brew --version | head -n 1)"
 
 # VS Code
 
-if [command -v code >/dev/null 2>&1]; then
-    echo "${GREEN}VS Code is already installed.${ENDCOLOR}"
-    code-version = "standard"
-elif [command -v code-insiders >/dev/null 2>&1]; then
-    echo "${GREEN}VS Code Insiders is already installed.${ENDCOLOR}"
-    code-version = "insiders"
-else
-    echo "${RED}VS Code not found. Installing VS Code from Brew...${ENDCOLOR}"
-    brew install --cask visual-studio-code -q
-fi
+# if [command -v code >/dev/null 2>&1]; then
+#     echo "${GREEN}VS Code is already installed.${ENDCOLOR}"
+#     code-version = "standard"
+# elif [command -v code-insiders >/dev/null 2>&1]; then
+#     echo "${GREEN}VS Code Insiders is already installed.${ENDCOLOR}"
+#     code-version = "insiders"
+# else
+#     echo "${RED}VS Code not found. Installing VS Code from Brew...${ENDCOLOR}"
+#     brew install --cask visual-studio-code -q
+# fi
+install_brew_cask visual-studio-code
 
 if command -v code >/dev/null 2>&1; then
     code --version
@@ -94,20 +135,23 @@ if CODE-READY == 1; then
 fi
 
 # Git
-if [command -v git >/dev/null 2>&1]; then
-    echo "${GREEN}Git is already installed.${ENDCOLOR}"
-else
-    echo "${RED}Git not found. Installing Git from Brew...${ENDCOLOR}"
-    brew install git -q
-fi
+# if [command -v git >/dev/null 2>&1]; then
+#     echo "${GREEN}Git is already installed.${ENDCOLOR}"
+# else
+#     echo "${RED}Git not found. Installing Git from Brew...${ENDCOLOR}"
+#     brew install git -q
+# fi
+
+install_brew_package git
 
 # Giuthub CLI
-if [command -v gh >/dev/null 2>&1]; then
-    echo "${GREEN}GitHub CLI is already installed.${ENDCOLOR}"
-else
-    echo "${RED}GitHub CLI not found. Installing GitHub CLI from Brew...${ENDCOLOR}"
-    brew install gh -q
-fi
+# if [command -v gh >/dev/null 2>&1]; then
+#     echo "${GREEN}GitHub CLI is already installed.${ENDCOLOR}"
+# else
+#     echo "${RED}GitHub CLI not found. Installing GitHub CLI from Brew...${ENDCOLOR}"
+#     brew install gh -q
+# fi
+install_brew_package gh
 
 if ! gh auth status 2>/dev/null || {
     echo "${YELLOW}You are not signed in to GitHub. Follow the steps to sign in.${ENDCOLOR}"
@@ -122,20 +166,23 @@ git clone "https://github.com/Hack-Club-Regis/HOOT-Web-Frontend.git" "$HOME\HOOT
 git clone "https://github.com/Hack-Club-Regis/HOOT-AI-Backend.git" "$HOME\HOOT\HOOT-AI-Backend"
 
 # GitHub Desktop
-if [command -v github >/dev/null 2>&1]; then
-    echo "${GREEN}GitHub Desktop is already installed.${ENDCOLOR}"
-else
-    echo "${RED}GitHub Desktop not found. Installing GitHub Desktop from Brew...${ENDCOLOR}"
-    brew install --cask github -q
-fi
+# if [command -v github >/dev/null 2>&1]; then
+#     echo "${GREEN}GitHub Desktop is already installed.${ENDCOLOR}"
+# else
+#     echo "${RED}GitHub Desktop not found. Installing GitHub Desktop from Brew...${ENDCOLOR}"
+#     brew install --cask github -q
+# fi
+
+install_brew_cask github
 
 # Anaconda
-if [command -v conda >/dev/null 2>&1]; then
-    echo "${GREEN}Anaconda is already installed.${ENDCOLOR}"
-else
-    echo "${RED}Anaconda not found. Installing Anaconda from Brew...${ENDCOLOR}"
-    brew install --cask anaconda -q
-fi
+# if [command -v conda >/dev/null 2>&1]; then
+#     echo "${GREEN}Anaconda is already installed.${ENDCOLOR}"
+# else
+#     echo "${RED}Anaconda not found. Installing Anaconda from Brew...${ENDCOLOR}"
+#     brew install --cask anaconda -q
+# fi
+install_brew_cask anaconda
 
 sleep 5
 TIMEOUT_SECONDS=60
@@ -195,12 +242,13 @@ done
 
 # Node.js
 
-if [command -v node >/dev/null 2>&1]; then
-    echo "${GREEN}Node.js is already installed.${ENDCOLOR}"
-else
-    echo "${RED}Node.js not found. Installing Node.js from Brew...${ENDCOLOR}"
-    brew install node -q
-fi
+# if [command -v node >/dev/null 2>&1]; then
+#     echo "${GREEN}Node.js is already installed.${ENDCOLOR}"
+# else
+#     echo "${RED}Node.js not found. Installing Node.js from Brew...${ENDCOLOR}"
+#     brew install node -q
+# fi
+install_brew_package node
 
 ELAPSED_SECONDS=0
 
