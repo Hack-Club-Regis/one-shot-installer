@@ -1,4 +1,4 @@
-echo "Hack Club Regis Server Configurator version 1.0.3"
+echo "Hack Club Regis Server Configurator version 1.0.5"
 echo "This is intended for SERVER USE ONLY. Running this on your laptop is NOT advised."
 echo "This application expects sudo permissions. If you didn't already, run this with 'sudo curl' instead."
 echo "The installation will begin in 10 seconds. Press Ctrl + C NOW to abort."
@@ -18,25 +18,23 @@ echo "GNOME Remote Desktop configuration was a success! See IP details at end of
 
 
 curl -O https://repo.anaconda.com/archive/Anaconda3-2026.07-1-Linux-x86_64.sh
-bash ./Anaconda3-2026.07-1-MacOSX-arm64.sh -b -p $HOME/anaconda3
+bash ./Anaconda3-2026.07-1-Linux-x86_64.sh -b -p $HOME/anaconda3
+sleep 5
 source ~/anaconda3/bin/activate
-conda init --all
+sleep 5
+source ~/.bashrc
+conda init --all -q
 
-conda create --name $(hostname) python=3.14
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+
+
+conda create --name $(hostname) python=3.14 --yes -q
+conda init --all -q
 conda activate $(hostname)
 
-python_packages = (
-    "tkinter",
-    "flask",
-    "ollama",
-    "openai",
-    "PyGithub",
-    "python-dotenv",
-    "requests",
-    "cryptography",
-    "PyJWT"
-)
-for package in python_packages
+PYTHON_PACKAGES=("tkinter" "flask" "ollama" "openai" "PyGithub" "python-dotenv" "requests" "cryptography" "PyJWT")
+for package in PYTHON_PACKAGES
 do 
     pip install $package
 done
